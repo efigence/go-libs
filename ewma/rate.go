@@ -47,12 +47,27 @@ func (r *EwmaRate) UpdateNow() float64 {
 	return r.Update(time.Now())
 }
 
+// Notify of multiple events happening.
+//
+// Uses system clock to determine current time. Returns current rate.
+func (r *EwmaRate) UpdateValueNow(value float64) float64 {
+	return r.UpdateValue(time.Now(), value)
+}
+
 // Notify of an event happening, with specified current time.
 //
 // Returns current rate.
 func (r *EwmaRate) Update(now time.Time) float64 {
 	timeDelta := now.Sub(r.lastTimestamp)
 	return r.Ewma.Update(nanosec/float64(timeDelta.Nanoseconds()), now)
+}
+
+// Notify of an specified amount of events happening, with specified current time.
+//
+// Returns current rate.
+func (r *EwmaRate) UpdateValue(now time.Time, value float64) float64 {
+	timeDelta := now.Sub(r.lastTimestamp)
+	return r.Ewma.Update(nanosec/float64(timeDelta.Nanoseconds())*value, now)
 }
 
 // Read the rate of events per second.

@@ -3,6 +3,7 @@
 package ewma
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
@@ -67,9 +68,27 @@ func TestRate(t *testing.T) {
 			if l.packet {
 				e.Update(ts)
 			}
-			if l.cur != -1 && e.Current(ts) != l.cur {
-				t.Errorf("Test %d, line %d: %.30f != %.30f",
-					testNo, lineNo, e.Current(ts), l.cur)
+			if l.cur != -1 {
+				assert.InDelta(t, l.cur, e.Current(ts), 0.0000001,
+					"test:%d line: %d", testNo, lineNo)
+			}
+		}
+	}
+}
+
+func TestRateValue(t *testing.T) {
+	for testNo, test := range testVectorRate {
+		ts := time.Now()
+		e := NewEwmaRate(time.Duration(1 * time.Second))
+		e.Ewma.Set(0, ts)
+		for lineNo, l := range test {
+			ts = ts.Add(time.Duration(l.delay * float64(time.Second.Nanoseconds())))
+			if l.packet {
+				e.UpdateValue(ts, 4.5)
+			}
+			if l.cur != -1 {
+				assert.InDelta(t, l.cur*4.5, e.Current(ts), 0.0000001,
+					"test:%d line: %d", testNo, lineNo)
 			}
 		}
 	}
