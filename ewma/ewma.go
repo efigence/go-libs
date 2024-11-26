@@ -1,6 +1,6 @@
 // Copyright (c) 2014 CloudFlare, Inc.
 //
-// Tickless implementation of exponentially decaying moving average
+// # Tickless implementation of exponentially decaying moving average
 //
 // Most of EWMA implementations update values every X seconds. This is
 // suboptimal. Instead of having a ticker goroutine it is possible to
